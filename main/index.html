@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="TaskFlow — AI-powered premium task management app with smart parsing, categories, priorities, due dates, and an AI assistant.">
+    <title>TaskFlow AI — Smart Task Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+    </div>
+
+    <div class="app-shell">
+        <!-- ========== SIDEBAR ========== -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                    </div>
+                    <span class="logo-text">taskflow</span>
+                    <span class="logo-badge">PRO</span>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+                
+            <!-- Gamification UI -->
+            <div class="user-level-container">
+                <div class="user-profile-header">
+                    <div class="user-avatar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <div class="user-meta">
+                        <div class="level-badge-premium" id="level-badge">Lvl 1</div>
+                        <div class="user-rank-title" id="user-rank-title">Novice</div>
+                    </div>
+                </div>
+                <div class="xp-tracker">
+                    <div class="xp-stats">
+                        <span class="xp-label">EXPERIENCE</span>
+                        <span class="xp-text" id="xp-text">0 / 100 XP</span>
+                    </div>
+                    <div class="xp-bar-container">
+                        <div class="xp-bar-fill" id="xp-bar-fill" style="width: 0%;">
+                            <div class="xp-bar-glow"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Focus Wisp Companion -->
+            <div class="wisp-container" id="wisp-container">
+                <div class="wisp-orb" id="wisp-orb">
+                    <div class="wisp-glow"></div>
+                    <div class="wisp-face" id="wisp-face">
+                        <div class="wisp-eye wisp-eye-l"></div>
+                        <div class="wisp-eye wisp-eye-r"></div>
+                        <div class="wisp-mouth" id="wisp-mouth"></div>
+                    </div>
+                    <div class="wisp-particles">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="wisp-name">Focus Wisp</div>
+                <div class="wisp-mood" id="wisp-mood">Calm</div>
+                <div class="wisp-speech" id="wisp-speech"></div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-group">
+                    <span class="nav-group-title">menu</span>
+                    <button class="nav-item active" data-view="all">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <span>all tasks</span>
+                        <span class="nav-badge" id="badge-all">0</span>
+                    </button>
+                    <button class="nav-item" data-view="today">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span>today</span>
+                        <span class="nav-badge" id="badge-today">0</span>
+                    </button>
+                    <button class="nav-item" data-view="upcoming">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span>upcoming</span>
+                        <span class="nav-badge" id="badge-upcoming">0</span>
+                    </button>
+                    <!-- 2.1 Dynamic Contextual "Smart Folders" -->
+                    <button class="nav-item" id="nav-smart" data-view="smart">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <span><span style="background: -webkit-linear-gradient(45deg, var(--accent), #fbbf24); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">smart</span> folder</span>
+                    </button>
+                    <button class="nav-item" data-view="completed">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 11 12 14 22 4"></polyline>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                        <span>completed</span>
+                        <span class="nav-badge" id="badge-completed">0</span>
+                    </button>
+                    <button class="nav-item" id="nav-zen-flow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                        <span>zen flow</span>
+                    </button>
+                    <button class="nav-item" id="nav-schedule">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><line x1="8" y1="14" x2="8" y2="18"></line><line x1="12" y1="14" x2="12" y2="18"></line><line x1="16" y1="14" x2="16" y2="18"></line></svg>
+                        <span>schedule</span>
+                    </button>
+                    <button class="nav-item" data-view="insights">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18"></path>
+                            <path d="M7 14l4-4 3 3 5-7"></path>
+                        </svg>
+                        <span>insights</span>
+                    </button>
+                </div>
+
+                <div class="nav-group">
+                    <span class="nav-group-title">categories</span>
+                    <button class="nav-item" data-category="personal">
+                        <span class="category-dot" style="--dot-color: var(--cat-personal);"></span>
+                        <span>Personal</span>
+                        <span class="nav-badge" id="badge-personal">0</span>
+                    </button>
+                    <button class="nav-item" data-category="work">
+                        <span class="category-dot" style="--dot-color: var(--cat-work);"></span>
+                        <span>Work</span>
+                        <span class="nav-badge" id="badge-work">0</span>
+                    </button>
+                    <button class="nav-item" data-category="shopping">
+                        <span class="category-dot" style="--dot-color: var(--cat-shopping);"></span>
+                        <span>Shopping</span>
+                        <span class="nav-badge" id="badge-shopping">0</span>
+                    </button>
+                    <button class="nav-item" data-category="health">
+                        <span class="category-dot" style="--dot-color: var(--cat-health);"></span>
+                        <span>Health</span>
+                        <span class="nav-badge" id="badge-health">0</span>
+                    </button>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="export-data" class="theme-toggle" aria-label="Export Data">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>Backup Data</span>
+                </button>
+                <button id="import-data" class="theme-toggle" aria-label="Import Data">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <span>Restore Data</span>
+                </button>
+                <input type="file" id="import-file" accept=".json" style="display: none;">
+                
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <span class="theme-label">Dark Mode</span>
+                </button>
+                <div style="height: 8px;"></div>
+                <button class="theme-toggle" id="settings-toggle" aria-label="Open Settings" style="color: var(--text-secondary); background: transparent; border: 1px solid var(--border-dim); width: 100%; border-radius: var(--r-md); padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ========== MAIN CONTENT ========== -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Open menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="top-bar-left">
+                    <h1 id="view-title" class="view-title">All Tasks</h1>
+                    <p id="date-display" class="date-display">Today</p>
+                </div>
+                <div class="top-bar-right">
+                    <div class="search-wrapper">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="search-input" class="search-input" placeholder="Search tasks..."
+                            autocomplete="off">
+                    </div>
+                    <button id="open-ai-chat" class="btn-ai-chat" aria-label="Open AI Assistant">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>AI Chat</span>
+                    </button>
+                    <button id="open-add-modal" class="btn-primary" aria-label="Add new task">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>Add Task</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- AI Suggestion Chips -->
+            <section class="ai-chips-section">
+                <div class="ai-chips-scroll">
+                    <button class="ai-chip" data-action="plan-day">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Plan My Day
+                    </button>
+                    <button class="ai-chip" data-action="suggest-tasks">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+                            </path>
+                        </svg>
+                        Suggest Tasks
+                    </button>
+                    <button class="ai-chip" data-action="weekly-review">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Weekly Review
+                    </button>
+                    <button class="ai-chip" data-action="prioritize">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                        </svg>
+                        Help Prioritize
+                    </button>
+                </div>
+            </section>
+
+            <!-- Stats Cards -->
+            <section class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon--total">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-total">0</span>
+                        <span class="stat-label">Total Tasks</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon--done">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-done">0</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon--pending">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-pending">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon--overdue">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                            </path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-overdue">0</span>
+                        <span class="stat-label">Overdue</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Smart Add Bar -->
+            <section class="smart-add-section">
+                <form id="smart-add-form" class="smart-add-form" autocomplete="off">
+                    <div class="smart-add-wrapper">
+                        <div class="smart-add-ai-badge">AI</div>
+                        <input type="text" id="smart-add-input" class="smart-add-input"
+                            placeholder='Try: "buy groceries tomorrow high priority" or "team meeting Friday work"'
+                            autocomplete="off">
+                        <button type="button" id="voice-input-btn" class="voice-input-btn" aria-label="Use voice input" title="Dictate task">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+                        </button>
+                        <button type="submit" id="smart-add-btn" class="smart-add-btn" aria-label="Smart add task">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="smart-add-status" class="smart-add-status"></div>
+                </form>
+            </section>
+
+            <div id="task-scroll-area" class="task-scroll-area">
+                <!-- Sort & Filter Bar -->
+                <section class="toolbar">
+                    <div class="toolbar-left">
+                        <span id="task-count" class="task-count">0 tasks</span>
+                    </div>
+                    <div class="toolbar-right">
+                        <button id="view-toggle-btn" class="view-toggle-btn" aria-label="Toggle view" title="Switch to Kanban view">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
+                        </button>
+                        <select id="sort-select" class="sort-select" aria-label="Sort tasks">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="priority">Priority</option>
+                            <option value="dueDate">Due Date</option>
+                            <option value="alpha">Alphabetical</option>
+                        </select>
+                        <button id="clear-completed-btn" class="clear-btn">Clear Done</button>
+                    </div>
+                </section>
+
+                <!-- Todo List (default view) -->
+                <section class="todo-list-section" id="list-view">
+                    <ul id="todo-list" class="todo-list">
+                        <!-- Rendered dynamically -->
+                    </ul>
+                    <div id="empty-state" class="empty-state">
+                        <div class="empty-icon">
+                            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <p>No tasks here yet</p>
+                        <span>Use the AI smart bar above or click "Add Task"</span>
+                    </div>
+                </section>
+
+                <!-- Kanban Board (alternate view) -->
+                <section class="kanban-board" id="kanban-view" style="display: none;">
+                    <div class="kanban-column" data-status="todo">
+                        <div class="kanban-column-header">
+                            <span class="kanban-dot kanban-dot--todo"></span>
+                            <h3>To Do</h3>
+                            <span class="kanban-count" id="kanban-count-todo">0</span>
+                        </div>
+                        <div class="kanban-cards" id="kanban-todo"></div>
+                    </div>
+                    <div class="kanban-column" data-status="progress">
+                        <div class="kanban-column-header">
+                            <span class="kanban-dot kanban-dot--progress"></span>
+                            <h3>In Progress</h3>
+                            <span class="kanban-count" id="kanban-count-progress">0</span>
+                        </div>
+                        <div class="kanban-cards" id="kanban-progress"></div>
+                    </div>
+                    <div class="kanban-column" data-status="done">
+                        <div class="kanban-column-header">
+                            <span class="kanban-dot kanban-dot--done"></span>
+                            <h3>Done</h3>
+                            <span class="kanban-count" id="kanban-count-done">0</span>
+                        </div>
+                        <div class="kanban-cards" id="kanban-done"></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Insights View (alternate view) -->
+            <section class="insights-view" id="insights-view" style="display: none;">
+                <div class="insights-grid">
+                    <!-- Heatmap Card -->
+                    <div class="insight-card full-width">
+                        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> Productivity Heatmap</h3>
+                        <div class="heatmap-container" id="productivity-heatmap">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Category Chart -->
+                    <div class="insight-card">
+                        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg> Time Allocation</h3>
+                        <div class="category-bars" id="category-bars">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- AI Review -->
+                    <div class="insight-card">
+                        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg> AI Weekly Review</h3>
+                        <div class="ai-review-content" id="ai-review-content">
+                            <p class="ai-review-placeholder">Get a personalized analysis of your recent productivity trends, completed tasks, and suggestions for the upcoming week.</p>
+                        </div>
+                        <button class="btn-primary" id="btn-generate-review" style="width: 100%; margin-top: 10px;">Generate Review</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========== ADD TASK MODAL ========== -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="modal-header">
+                <h2 id="modal-title">New Task</h2>
+                <button id="modal-close" class="modal-close" aria-label="Close modal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="todo-form" autocomplete="off">
+                <div class="form-group">
+                    <label for="task-title">Task Title</label>
+                    <input type="text" id="task-title" placeholder="What needs to be done?" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Description <span class="optional">(optional)</span></label>
+                    <textarea id="task-description" placeholder="Add some details..." rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-category">Category</label>
+                        <select id="task-category">
+                            <option value="personal">🟣 Personal</option>
+                            <option value="work">🔵 Work</option>
+                            <option value="shopping">🟢 Shopping</option>
+                            <option value="health">🔴 Health</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-priority">Priority</label>
+                        <select id="task-priority">
+                            <option value="low">🟢 Low</option>
+                            <option value="medium" selected>🟡 Medium</option>
+                            <option value="high">🔴 High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-due">Due Date <span class="optional">(optional)</span></label>
+                        <input type="date" id="task-due">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-recurrence">Recurrence</label>
+                        <select id="task-recurrence">
+                            <option value="none" selected>None</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="modal-cancel" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== AI CHAT PANEL ========== -->
+    <div id="ai-chat-panel" class="ai-chat-panel">
+        <div class="ai-chat-header">
+            <div class="ai-chat-title">
+                <div class="ai-avatar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <h3>TaskFlow AI</h3>
+                    <span class="ai-status-text">Ready to help</span>
+                </div>
+            </div>
+            <button id="ai-chat-close" class="modal-close" aria-label="Close chat">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div id="ai-chat-messages" class="ai-chat-messages">
+            <div class="ai-msg ai-msg--assistant">
+                <div class="ai-msg-bubble">
+                    👋 Hi! I'm your TaskFlow AI assistant. I can help you:
+                    <ul>
+                        <li>📋 Plan your day or week</li>
+                        <li>💡 Suggest tasks you might need</li>
+                        <li>🎯 Prioritize your workload</li>
+                        <li>📊 Review your productivity</li>
+                    </ul>
+                    Just type a question or try the quick actions above!
+                </div>
+            </div>
+        </div>
+        <form id="ai-chat-form" class="ai-chat-input-area" autocomplete="off">
+            <input type="text" id="ai-chat-input" class="ai-chat-input"
+                placeholder="Ask AI anything about your tasks..." autocomplete="off">
+            <button type="submit" id="ai-chat-send" class="ai-chat-send" aria-label="Send message">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </form>
+    </div>
+    <div id="ai-chat-overlay" class="ai-chat-overlay"></div>
+
+    <!-- Mobile overlay for sidebar -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <!-- ========== ZEN FLOW OVERLAY ========== -->
+    <div id="zen-flow-overlay" class="zen-flow-overlay">
+        <div class="zen-flow-bg">
+            <div class="zen-orb zen-orb-1"></div>
+            <div class="zen-orb zen-orb-2"></div>
+            <div class="zen-orb zen-orb-3"></div>
+        </div>
+        <button id="zen-flow-close" class="zen-close-btn" aria-label="Exit Zen Flow">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <div class="zen-content">
+            <div class="zen-label">FOCUS ON</div>
+            <h1 class="zen-task-title" id="zen-task-title">Loading...</h1>
+            <div class="zen-task-meta" id="zen-task-meta"></div>
+            <div class="zen-timer" id="zen-timer">25:00</div>
+            <div class="zen-timer-bar-bg"><div class="zen-timer-bar" id="zen-timer-bar"></div></div>
+            <div class="zen-controls">
+                <button id="zen-skip" class="zen-btn zen-btn--secondary">Skip Task</button>
+                <button id="zen-start" class="zen-btn zen-btn--primary">Start Focus</button>
+                <button id="zen-complete" class="zen-btn zen-btn--success">Mark Complete</button>
+            </div>
+            <div class="zen-quote" id="zen-quote"></div>
+            <!-- 3.3 Spatial Audio / Focus Soundscapes -->
+            <div class="zen-audio-player">
+                <div class="zen-audio-controls" id="zen-audio-controls" style="display: none; align-items: center; gap: 8px; margin-right: 12px;">
+                    <button id="zen-audio-play-btn" class="action-btn" aria-label="Play/Pause Audio" style="border-radius: 50%; padding: 6px; background: rgba(255,255,255,0.1);">
+                        <svg id="zen-icon-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        <svg id="zen-icon-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                    </button>
+                    <input type="range" id="zen-audio-volume" min="0" max="1" step="0.05" value="0.5" title="Volume" style="width: 70px; accent-color: var(--accent);">
+                </div>
+                <select id="zen-audio-select" class="zen-audio-select">
+                    <option value="">🔇 No Audio</option>
+                    <option value="FocusSongs/fassounds-focus-zone-relax-mellow-lofi-music-259701.mp3">🎧 Mellow Lofi Zone</option>
+                    <option value="FocusSongs/clavier-music-soothing-piano-harmony-relaxation-amp-focus-268523.mp3">🎹 Clavier Piano Harmony</option>
+                    <option value="FocusSongs/music_for_video-nature-99499.mp3">🌿 Nature Ambience</option>
+                    <option value="FocusSongs/34910776-free-royalty-zen-calm-deep-meditation-and-sleep-music-191592.mp3">🧘 Deep Zen Meditation</option>
+                    <option value="FocusSongs/vividillustrate-432hz-magic-healing-cosmic-sleep-amp-focus-frequency-361117.mp3">✨ 432Hz Cosmic Focus</option>
+                    <option value="FocusSongs/Evening-Improvisation-with-Ethera(chosic.com).mp3">🌇 Evening Improvisation</option>
+                    <option value="FocusSongs/Sonder(chosic.com).mp3">🌌 Sonder Atmospheric</option>
+                </select>
+                <audio id="zen-audio-element" loop></audio>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== AI SCHEDULER PANEL ========== -->
+    <div id="schedule-overlay" class="schedule-overlay">
+        <div class="schedule-panel">
+            <div class="schedule-header">
+                <h2 class="schedule-title">📅 AI Schedule</h2>
+                <button id="schedule-close" class="modal-close" aria-label="Close schedule">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="schedule-toolbar">
+                <button id="schedule-generate" class="zen-btn zen-btn--primary">✨ Generate Schedule</button>
+                <span class="schedule-date" id="schedule-date"></span>
+            </div>
+            <div id="schedule-timeline" class="schedule-timeline">
+                <div class="schedule-empty">
+                    <p>Click <strong>Generate Schedule</strong> to let AI plan your day.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 2.3 Command Palette (Omnibar) -->
+    <div id="omnibar-overlay" class="omnibar-overlay">
+        <div class="omnibar">
+            <svg class="omnibar-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="omnibar-input" class="omnibar-input" placeholder="Type a command or ask AI... (e.g., 'Postpone all work tasks')" autocomplete="off">
+            <div id="omnibar-spinner" class="omnibar-spinner" aria-hidden="true"></div>
+            <div id="omnibar-results" class="omnibar-results">
+                <div class="omnibar-hint"><kbd>Enter</kbd> to execute AI command &middot; <kbd>Esc</kbd> to close</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SETTINGS MODAL ========== -->
+    <div id="settings-overlay" class="modal-overlay">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 id="settings-title">Settings</h2>
+                <button id="settings-close" class="modal-close" aria-label="Close settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="settings-content" style="padding: 10px 0;">
+                <div class="form-group">
+                    <label for="api-key-input">OpenRouter API Key</label>
+                    <input type="password" id="api-key-input" placeholder="sk-or-v1-..." autocomplete="off">
+                    <small style="color: var(--text-muted); display: block; margin-top: 6px;">Required for AI features. Get one from <a href="https://openrouter.ai" target="_blank" style="color: var(--accent);">openrouter.ai</a></small>
+                </div>
+                <!-- Data Management -->
+                <div style="margin-top: var(--sp-4); border-top: 1px solid var(--border-dim); padding-top: var(--sp-4);">
+                    <h3 style="font-size: 0.9rem; margin-bottom: 12px; font-weight: 600;">Data Management</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="settings-import-data" class="btn-secondary" style="flex: 1;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Import Backup
+                        </button>
+                        <input type="file" id="settings-import-file" style="display: none;" accept=".json">
+                        <button id="settings-export-data" class="btn-primary" style="flex: 1;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            Export Backup
+                        </button>
+                    </div>
+                </div>
+                <button class="btn-primary" id="settings-saveBtn" style="width: 100%; margin-top: var(--sp-6);">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="ai.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
