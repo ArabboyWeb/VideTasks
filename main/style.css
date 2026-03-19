@@ -1326,10 +1326,13 @@ a { text-decoration: none; color: inherit; }
 .main-content::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
 
 /* ========== RESPONSIVE ========== */
+
+/* --- Tablet / Small Desktop --- */
 @media (max-width: 1200px) {
     .stats-section { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* --- Tablet Portrait --- */
 @media (max-width: 1024px) {
     :root { --sidebar-w: 72px; }
     .logo-text, .logo-badge, .nav-item span:first-of-type, .nav-badge, .nav-group-title, .theme-label, .ai-status-text { display: none !important; }
@@ -1344,35 +1347,475 @@ a { text-decoration: none; color: inherit; }
     .main-content { padding: var(--sp-5) var(--sp-6); }
 }
 
+/* --- Mobile (≤768px) — Major responsive changes --- */
 @media (max-width: 768px) {
     :root { --sidebar-w: 0; }
-    .sidebar { 
-        position: fixed; left: 0; top: 0; bottom: 0;
-        width: 260px;
+
+    /* --- Sidebar: Off-canvas drawer --- */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 85vw;
         transform: translateX(-100%);
-        transition: transform var(--t-slow);
-        padding: var(--sp-6) !important;
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: var(--sp-5) var(--sp-5) !important;
         align-items: flex-start !important;
+        z-index: 200;
+        box-shadow: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
-    .sidebar.open { transform: translateX(0); }
-    .sidebar-overlay.open { display: block; }
-    .mobile-menu-btn { display: flex; }
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 8px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Sidebar overlay  */
+    .sidebar-overlay {
+        transition: opacity 0.3s ease;
+        opacity: 0;
+    }
+    .sidebar-overlay.open {
+        display: block;
+        opacity: 1;
+    }
+
+    /* Restore sidebar content when open */
     .logo-text, .logo-badge, .nav-item span:first-of-type, .nav-badge, .nav-group-title, .theme-label { display: block !important; }
-    .nav-item { justify-content: flex-start !important; padding: 9px var(--sp-3) !important; }
-    .main-content { padding: var(--sp-4); }
+    .nav-item { justify-content: flex-start !important; padding: 10px var(--sp-3) !important; }
+    .sidebar-header { justify-content: space-between !important; width: 100%; }
+    .sidebar-toggle { display: flex !important; }
+
+    /* Hide user level container and wisp in mobile sidebar to save space */
+    .user-level-container { padding: var(--sp-3); }
+    .wisp-container { padding: var(--sp-3); }
+    .wisp-orb { width: 40px; height: 40px; }
+
+    /* --- Mobile menu btn --- */
+    .mobile-menu-btn {
+        display: flex;
+        flex-shrink: 0;
+    }
+
+    /* --- Main Content --- */
+    .main-content {
+        padding: var(--sp-4) var(--sp-4);
+        gap: var(--sp-4);
+    }
+
+    /* --- Top Bar: Stack header for mobile --- */
+    .top-bar {
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        padding-bottom: var(--sp-2);
+    }
+
+    .top-bar-left {
+        order: 1;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .view-title {
+        font-size: 1.35rem;
+    }
+
+    .date-display {
+        font-size: 0.72rem;
+    }
+
+    .mobile-menu-btn {
+        order: 0;
+    }
+
+    /* Top bar right: wrap so search drops to its own row */
+    .top-bar-right {
+        order: 2;
+        gap: var(--sp-2);
+        flex-shrink: 0;
+        flex-wrap: wrap;
+    }
+
+    /* Hide button text on mobile */
     .top-bar-right .btn-primary span { display: none; }
-    .top-bar-right .btn-primary { padding: 9px 12px; }
-    .stats-section { grid-template-columns: repeat(2, 1fr); }
+    .top-bar-right .btn-primary { padding: 10px 12px; }
+    .top-bar-right .btn-ai-chat span { display: none; }
+    .top-bar-right .btn-ai-chat { padding: 10px 12px; }
+
+    /* Search: Full-width on its own row within top-bar-right */
+    .search-wrapper {
+        order: 10;
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    .search-input {
+        width: 100% !important;
+    }
+    .search-input:focus {
+        width: 100% !important;
+    }
+
+    /* --- AI Chips --- */
+    .ai-chips-section {
+        margin: 0 calc(var(--sp-4) * -1);
+        padding: 0 var(--sp-4);
+    }
+    .ai-chip {
+        padding: 6px var(--sp-3);
+        font-size: 0.75rem;
+    }
+
+    /* --- Stats Cards --- */
+    .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--sp-3);
+    }
+    .stat-card {
+        padding: var(--sp-3) var(--sp-4);
+    }
+    .stat-icon {
+        width: 36px;
+        height: 36px;
+    }
+    .stat-value {
+        font-size: 1.4rem;
+    }
+    .stat-label {
+        font-size: 0.68rem;
+    }
+
+    /* --- Smart Add Bar --- */
+    .smart-add-wrapper {
+        padding: 3px 3px 3px var(--sp-3);
+        gap: var(--sp-2);
+        border-radius: var(--r-lg);
+    }
+    .smart-add-input {
+        font-size: 0.85rem;
+        padding: var(--sp-2) 0;
+    }
+    .smart-add-ai-badge {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+    }
+    .voice-input-btn {
+        width: 36px;
+        height: 36px;
+    }
+    .smart-add-btn {
+        width: 36px;
+        height: 36px;
+    }
+    .smart-add-status {
+        padding: 0 var(--sp-3);
+        font-size: 0.75rem;
+    }
+
+    /* --- Toolbar --- */
+    .toolbar {
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+    }
+    .toolbar-right {
+        gap: var(--sp-2);
+    }
+    .sort-select {
+        font-size: 0.75rem;
+        padding: 6px var(--sp-2);
+    }
+    .clear-btn {
+        font-size: 0.75rem;
+        padding: 6px var(--sp-3);
+    }
+
+    /* --- Todo Items --- */
+    .todo-item {
+        padding: var(--sp-3) var(--sp-4);
+        gap: var(--sp-3);
+    }
+    .todo-title {
+        font-size: 0.88rem;
+    }
+    .todo-desc {
+        font-size: 0.75rem;
+    }
+    .todo-meta {
+        gap: 6px;
+        margin-top: 8px;
+    }
+    .meta-tag {
+        font-size: 0.62rem;
+        padding: 2px 6px;
+    }
+    /* Always show actions on touch devices */
+    .todo-actions {
+        opacity: 1;
+    }
+    .action-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* --- Kanban --- */
+    .kanban-board { grid-template-columns: 1fr; }
+
+    /* --- AI Chat Panel: Full screen --- */
     .ai-chat-panel { width: 100%; }
+    .ai-chat-header { padding: var(--sp-4); }
+    .ai-chat-messages { padding: var(--sp-4); }
+    .ai-chat-input-area { padding: var(--sp-3) var(--sp-4); }
+
+    /* --- Modal --- */
+    .modal {
+        width: calc(100vw - 24px);
+        max-height: 92vh;
+        margin: 12px;
+        border-radius: var(--r-lg);
+    }
+    .modal-header {
+        padding: var(--sp-4) var(--sp-4) 0;
+    }
+    #todo-form {
+        padding: var(--sp-4);
+        gap: var(--sp-3);
+    }
     .form-row { grid-template-columns: 1fr; }
-    .search-input { width: 160px; }
-    .search-input:focus { width: 200px; }
+
+    /* --- Insights --- */
+    .insights-grid { grid-template-columns: 1fr; }
+
+    /* --- Schedule Panel --- */
+    .schedule-panel {
+        width: 96%;
+        max-width: 96%;
+        max-height: 90vh;
+    }
+    .schedule-header { padding: var(--sp-4); }
+    .schedule-toolbar { padding: var(--sp-3) var(--sp-4); flex-wrap: wrap; gap: var(--sp-2); }
+    .schedule-timeline { padding: var(--sp-3) var(--sp-4); }
+    .schedule-block { flex-direction: column; gap: var(--sp-2); }
+    .schedule-time { min-width: unset; }
+
+    /* --- Zen Flow --- */
+    .zen-content { padding: 0 var(--sp-4); }
+    .zen-close-btn { top: 16px; right: 16px; width: 40px; height: 40px; }
+    .zen-controls { gap: var(--sp-2); }
+    .zen-btn { padding: 10px 20px; font-size: 0.8rem; }
+    .zen-audio-player { flex-direction: column; align-items: center; gap: var(--sp-3); }
+    .zen-audio-select { font-size: 0.8rem; padding: 8px 12px; }
+
+    /* --- Omnibar --- */
+    .omnibar { max-width: 95vw; }
+    .omnibar-input { font-size: 1rem; padding: 14px 16px 14px 44px; }
 }
 
+/* --- Small Mobile (≤480px) — Extra compact --- */
 @media (max-width: 480px) {
-    .stats-section { grid-template-columns: 1fr 1fr; }
-    .top-bar-right .btn-ai-chat span { display: none; }
-    .top-bar-right .btn-ai-chat { padding: 9px 12px; }
+    .main-content {
+        padding: var(--sp-3);
+        gap: var(--sp-3);
+    }
+
+    .top-bar {
+        gap: var(--sp-2);
+    }
+
+    .view-title {
+        font-size: 1.2rem;
+    }
+
+    /* Stats — 2 column but smaller */
+    .stats-section {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-2);
+    }
+    .stat-card {
+        padding: var(--sp-2) var(--sp-3);
+        gap: var(--sp-2);
+    }
+    .stat-icon {
+        width: 32px;
+        height: 32px;
+    }
+    .stat-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+    .stat-value {
+        font-size: 1.2rem;
+    }
+    .stat-label {
+        font-size: 0.62rem;
+    }
+
+    /* AI Chips smaller */
+    .ai-chip {
+        padding: 5px 8px;
+        font-size: 0.7rem;
+    }
+    .ai-chip svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    /* Smart Add even more compact */
+    .smart-add-wrapper {
+        padding: 2px 2px 2px var(--sp-3);
+    }
+    .smart-add-input {
+        font-size: 0.8rem;
+    }
+    .smart-add-ai-badge {
+        display: none;
+    }
+
+    /* Toolbar */
+    .task-count { font-size: 0.72rem; }
+
+    /* Todo items compact */
+    .todo-item {
+        padding: var(--sp-3);
+        border-radius: var(--r-md);
+    }
+    .todo-title {
+        font-size: 0.84rem;
+    }
+
+    /* Modal full-width */
+    .modal {
+        width: calc(100vw - 16px);
+        margin: 8px;
+    }
+}
+
+/* --- Extra Small Mobile (≤360px) — Minimum viable layout --- */
+@media (max-width: 360px) {
+    .main-content {
+        padding: var(--sp-2) var(--sp-3);
+    }
+
+    .view-title {
+        font-size: 1.05rem;
+    }
+    .date-display {
+        font-size: 0.65rem;
+    }
+
+    .top-bar-right {
+        gap: 4px;
+    }
+    .top-bar-right .btn-primary { padding: 8px 10px; }
+    .top-bar-right .btn-ai-chat { padding: 8px 10px; }
+
+    .mobile-menu-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .stats-section {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-2);
+    }
+    .stat-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: var(--sp-2);
+        gap: var(--sp-1);
+    }
+    .stat-icon {
+        width: 28px;
+        height: 28px;
+    }
+    .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .ai-chips-scroll { gap: 4px; }
+    .ai-chip { font-size: 0.65rem; padding: 4px 6px; }
+
+    .smart-add-wrapper {
+        border-radius: var(--r-md);
+    }
+    .voice-input-btn { width: 32px; height: 32px; }
+    .smart-add-btn { width: 32px; height: 32px; }
+
+    .todo-item {
+        padding: var(--sp-2) var(--sp-3);
+    }
+    .action-btn {
+        width: 26px;
+        height: 26px;
+    }
+
+    /* Sidebar narrower on very small screens */
+    .sidebar {
+        width: 260px;
+        max-width: 80vw;
+    }
+}
+
+/* --- Safe area insets for notched phones --- */
+@supports (padding-top: env(safe-area-inset-top)) {
+    @media (max-width: 768px) {
+        .main-content {
+            padding-top: max(var(--sp-4), env(safe-area-inset-top));
+            padding-bottom: max(var(--sp-4), env(safe-area-inset-bottom));
+            padding-left: max(var(--sp-4), env(safe-area-inset-left));
+            padding-right: max(var(--sp-4), env(safe-area-inset-right));
+        }
+        .sidebar {
+            padding-top: max(var(--sp-5), env(safe-area-inset-top)) !important;
+        }
+        .ai-chat-input-area {
+            padding-bottom: max(var(--sp-3), env(safe-area-inset-bottom));
+        }
+    }
+}
+
+/* --- Touch device optimizations --- */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    .nav-item {
+        min-height: 44px;
+    }
+    .action-btn {
+        min-width: 36px;
+        min-height: 36px;
+    }
+    .checkbox-container {
+        width: 24px;
+        height: 24px;
+    }
+    .checkmark {
+        width: 24px;
+        height: 24px;
+    }
+    /* Always show action buttons on touch */
+    .todo-actions {
+        opacity: 1;
+    }
+    /* Prevent text selection on interactive elements */
+    .nav-item,
+    .ai-chip,
+    .btn-primary,
+    .btn-secondary,
+    .btn-ai-chat,
+    .action-btn,
+    .zen-btn {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    /* Disable hover effects that can "stick" on touch */
+    .todo-item:hover {
+        transform: none;
+    }
+    .stat-card:hover {
+        transform: none;
+    }
 }
 
 /* ========== FOCUS WISP COMPANION ========== */
