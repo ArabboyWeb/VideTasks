@@ -19,14 +19,9 @@ const TaskFlowAI = (() => {
     ];
 
     function getApiKey() {
-        const apiKey = (
-            localStorage.getItem('taskflow_api_key') ||
-            sessionStorage.getItem('taskflow_api_key') ||
-            window.__TASKFLOW_API_KEY__ ||
-            ''
-        ).trim();
+        const apiKey = String(window.__VIDE_TASKS_AI_KEY__ || '').trim();
         if (!apiKey) {
-            throw new Error('Add your OpenRouter API key in Settings to use AI features.');
+            throw new Error('AI provider is not configured by the app developer.');
         }
         return apiKey;
     }
@@ -81,7 +76,7 @@ const TaskFlowAI = (() => {
             if (!response.ok) {
                 const errText = await response.text().catch(() => 'Unknown error');
                 if (response.status === 401 || response.status === 403) {
-                    throw new Error('The OpenRouter API key is missing or invalid. Update it in Settings.');
+                    throw new Error('The developer AI provider key is missing or invalid.');
                 }
                 throw new Error(`API Error (${response.status}): ${errText}`);
             }

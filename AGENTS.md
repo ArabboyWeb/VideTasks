@@ -12,7 +12,7 @@ You are working on Vide Tasks AI, a static web task app. Treat it like a serious
 ## Product Direction
 
 - The app should feel premium, calm, and minimal.
-- Prioritize the core workflow: add tasks, manage tasks, search, filter, sort, use AI assistance, and back up data.
+- Prioritize the core workflow: add tasks, manage tasks, search, filter, sort, and use AI assistance.
 - Remove or hide visual noise unless it clearly improves task management.
 - Keep the interface dense enough for daily use, with clear hierarchy and no decorative clutter.
 
@@ -26,6 +26,6 @@ You are working on Vide Tasks AI, a static web task app. Treat it like a serious
 
 ## Safety
 
-- Do not store secrets outside the browser storage pattern already used by the app unless a backend is introduced.
+- Do not add user-facing personal API key fields. AI access is developer/provider-owned and should move behind a backend or proxy before production.
 - Do not break localStorage compatibility for existing task data.
 - If a visible feature is removed from the UI, make sure its JS listeners remain harmless or are guarded.

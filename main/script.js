@@ -8,12 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeLabel = themeToggle.querySelector('.theme-label');
-    const sidebarExportBtn = document.getElementById('export-data');
-    const sidebarImportBtn = document.getElementById('import-data');
-    const sidebarImportFile = document.getElementById('import-file');
-
     const levelBadge = document.getElementById('level-badge');
     const xpText = document.getElementById('xp-text');
     const xpBarFill = document.getElementById('xp-bar-fill');
@@ -61,16 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputPriority = document.getElementById('task-priority');
     const inputDue = document.getElementById('task-due');
     const inputRecurrence = document.getElementById('task-recurrence');
-
-    // Settings
-    const settingsOverlay = document.getElementById('settings-overlay');
-    const settingsToggle = document.getElementById('settings-toggle');
-    const settingsClose = document.getElementById('settings-close');
-    const apiKeyInput = document.getElementById('api-key-input');
-    const settingsSaveBtn = document.getElementById('settings-saveBtn');
-    const settingsExportBtn = document.getElementById('settings-export-data');
-    const settingsImportBtn = document.getElementById('settings-import-data');
-    const settingsImportFile = document.getElementById('settings-import-file');
 
     // Insights
     const insightsView = document.getElementById('insights-view');
@@ -288,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentCategory = null;
     let searchQuery = '';
     let sortMode = 'newest';
-    let theme = localStorage.getItem('taskflow_theme') || 'dark';
     let draggedItem = null;
 
     let activePomodoroId = null;
@@ -325,7 +308,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     // ========== Init ==========
-    applyTheme(theme);
+    localStorage.removeItem('taskflow_theme');
+    localStorage.removeItem('taskflow_api_key');
+    sessionStorage.removeItem('taskflow_api_key');
+    applyTheme();
     setDate();
     updateGamificationUI();
     updateWisp();
@@ -338,15 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebarToggle.addEventListener('click', toggleSidebar);
         mobileMenuBtn.addEventListener('click', openMobileSidebar);
         sidebarOverlay.addEventListener('click', closeMobileSidebar);
-
-        // Theme
-        themeToggle.addEventListener('click', toggleTheme);
-
-        // Data Management
-        bindExportControl(sidebarExportBtn);
-        bindExportControl(settingsExportBtn);
-        bindImportControl(sidebarImportBtn, sidebarImportFile);
-        bindImportControl(settingsImportBtn, settingsImportFile);
 
         // Nav Views
         navItems.forEach(btn => btn.addEventListener('click', () => {
@@ -394,32 +371,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Clear completed
         clearCompletedBtn.addEventListener('click', clearCompleted);
-
-        // Settings Modal
-        if (settingsToggle) settingsToggle.addEventListener('click', () => {
-            apiKeyInput.value = localStorage.getItem('taskflow_api_key')
-                || sessionStorage.getItem('taskflow_api_key')
-                || window.__TASKFLOW_API_KEY__
-                || '';
-            settingsOverlay.classList.add('open');
-            closeMobileSidebar();
-        });
-        if (settingsClose) settingsClose.addEventListener('click', () => settingsOverlay.classList.remove('open'));
-        if (settingsSaveBtn) settingsSaveBtn.addEventListener('click', () => {
-            const newKey = apiKeyInput.value.trim();
-            if (newKey) {
-                localStorage.setItem('taskflow_api_key', newKey);
-                sessionStorage.setItem('taskflow_api_key', newKey);
-            } else {
-                localStorage.removeItem('taskflow_api_key');
-                sessionStorage.removeItem('taskflow_api_key');
-            }
-            settingsOverlay.classList.remove('open');
-            alert('Settings saved successfully!');
-        });
-        if (settingsOverlay) settingsOverlay.addEventListener('click', (e) => {
-            if (e.target === settingsOverlay) settingsOverlay.classList.remove('open');
-        });
 
         // Insights AI Review
         if (btnGenerateReview) btnGenerateReview.addEventListener('click', generateInsightsReview);
@@ -494,19 +445,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ========== Theme ==========
-    function applyTheme(t) {
-        document.documentElement.setAttribute('data-theme', t);
-        themeLabel.textContent = t === 'dark' ? 'Dark Mode' : 'Light Mode';
-    }
-
-    function bindExportControl(button) {
-        if (button) button.addEventListener('click', exportData);
-    }
-
-    function bindImportControl(button, input) {
-        if (!button || !input) return;
-        button.addEventListener('click', () => input.click());
-        input.addEventListener('change', importData);
+    function applyTheme() {
+        document.documentElement.setAttribute('data-theme', 'light');
     }
 
     function setWorkspaceMode(showTaskViews) {
@@ -531,12 +471,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('Notification permission request failed:', err);
             return false;
         }
-    }
-
-    function toggleTheme() {
-        theme = theme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('taskflow_theme', theme);
-        applyTheme(theme);
     }
 
     // ========== Sidebar ==========
@@ -1638,47 +1572,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (typeof updateWisp === 'function') updateWisp();
-    }
-
-    // ========== Data Management ==========
-    function exportData() {
-        const data = { todos, chatHistory, userXp, theme };
-        const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
-        const anchor = document.createElement('a');
-        anchor.setAttribute('href', dataStr);
-        anchor.setAttribute('download', `taskflow_backup_${getTodayStr()}.json`);
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-    }
-
-    function importData(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            try {
-                const data = JSON.parse(event.target.result);
-                if (data.todos) todos = data.todos.map(normalizeTodoRecord);
-                if (data.chatHistory) {
-                    chatHistory = data.chatHistory;
-                    saveChatHistory();
-                }
-                if (data.userXp !== undefined) userXp = data.userXp;
-                if (data.theme) {
-                    theme = data.theme;
-                    applyTheme(theme);
-                }
-                save();
-                updateGamificationUI();
-                render();
-                alert('Data successfully imported!');
-            } catch (err) {
-                alert('Failed to import data: Invalid file format.');
-            }
-        };
-        reader.readAsText(file);
-        e.target.value = '';
     }
 
     // ========== ZEN FLOW MODE ==========
