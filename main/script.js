@@ -489,6 +489,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchInput.focus();
             }
         });
+
+        window.addEventListener('resize', syncResponsiveShell);
     }
 
     // ========== Theme ==========
@@ -540,12 +542,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // ========== Sidebar ==========
     function toggleSidebar() { sidebar.classList.toggle('collapsed'); }
     function openMobileSidebar() {
+        // Prevent desktop collapsed state from breaking the mobile drawer layout.
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove('collapsed');
+            document.body.classList.add('mobile-drawer-open');
+        }
         sidebar.classList.add('open');
         sidebarOverlay.classList.add('open');
     }
     function closeMobileSidebar() {
         sidebar.classList.remove('open');
         sidebarOverlay.classList.remove('open');
+        document.body.classList.remove('mobile-drawer-open');
+    }
+    function syncResponsiveShell() {
+        if (window.innerWidth > 768) {
+            closeMobileSidebar();
+        }
     }
     function setActiveNav(btn) {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
